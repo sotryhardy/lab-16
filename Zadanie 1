@@ -1,0 +1,44 @@
+import sqlite3
+
+con = sqlite3.connect('baza.db')
+
+cur = con.cursor()
+
+cur.execute('''CREATE TABLE IF NOT EXISTS Znane(
+    Imie TEXT,
+    Numer TEXT
+)''')
+con.commit()
+
+def dodawanie():
+    imieZ = input('Wprowadź imie: ')
+    numerZ = input('Wprowadź numer: ')
+    cur.execute(f"SELECT Numer FROM Znane WHERE Numer = '{numerZ}'")
+    if cur.fetchone() is None:
+        cur.execute(f"INSERT INTO Znane VALUES('{imieZ}', '{numerZ}')")
+        con.commit()
+        print("Kontakt został dodany!")
+    else:
+        print("Taki kontakt już masz!")
+
+
+def poszuk():
+    s = input('Wprowadź numer: ')
+    czyjest = False
+    for value in cur.execute("SELECT * FROM Znane"):
+        if s == value[1]:
+            print('Ten kontakt został znaleziony: ' + value[0] + ', ' + value[1])
+            czyjest = True
+            break
+    if czyjest == False:
+        print('Nie masz takiego kontaktu.')
+
+print('Co chcesz zrobić?')
+print('1 - dodać nowy kontakt')
+print('2 - znaleść kontakt')
+inter = int(input())
+
+if inter == 1:
+    dodawanie()
+else:
+    poszuk()
