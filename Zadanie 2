@@ -1,0 +1,57 @@
+import sqlite3
+
+db = sqlite3.connect('baza.db')
+
+cur = db.cursor()
+
+cur.execute('''CREATE TABLE IF NOT EXISTS Pracowniki(
+    Imie TEXT,
+    Nazwisko TEXT,
+    Miejscowosc TEXT,
+    Zarobek BIGINT)''')
+db.commit()
+
+def dodawanie():
+    nazwisko = input('Wprowadź nazwisko pracownika: ')
+    cur.execute(f"SELECT Nazwisko FROM Pracowniki WHERE Nazwisko = '{nazwisko}'")
+    if cur.fetchone() is None:
+        imie = input('Wprowadź imie pracownika: ')
+        miejscowosc = input('Wprowadź miejscowosc pracownika: ')
+        zarobek = int(input('Wprowadź zarobek pracownika: '))
+        cur.execute(f"INSERT INTO Pracowniki VALUES('{imie}', '{nazwisko}', '{miejscowosc}', {zarobek})")
+        db.commit()
+        sortowanie()
+    else:
+        print('Taki pracownik juź jest!')
+
+def wysw():
+    for value in cur.execute("SELECT * FROM Pracowniki"):
+        print('    Pracownik: ' + value[0], value[1] + ', Miejscowość: ' + value[2] + ', Zarobek:',value[3])
+
+def sortowanie():
+    cur.execute("SELECT * FROM Pracowniki ORDER BY Nazwisko asc")
+    db.commit()
+
+def usun():
+    nazwisko = input('    Wprowadź nazwisko pracownika, którego chcesz usunąć: ')
+    cur.execute(f"SELECT Nazwisko FROM Pracowniki WHERE Nazwasko = '{nazwisko}'")
+    if cur.fetchone() is None:
+        cur.execute(f"DELETE FROM Pracowniki WHERE Nazwisko = '{nazwisko}'")
+        db.commit()
+    else:
+        print('Takiego pracownika nie ma!')
+    wysw()
+
+print('Co chcesz zrobić: ')
+print('    1 - Dodać pracownika')
+print('    2 - Usunąć pracownika')
+print('    3 - Wyświetlicz pracowników')
+interf = int(input())
+
+if interf == 1: 
+    dodawanie()
+    wysw()
+elif interf == 2: 
+    usun()
+else:
+    wysw()
